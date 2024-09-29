@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+class Prefix():
+    api:str = "/api"
 
 class Settings(BaseSettings):
     DB_HOST: str
@@ -9,6 +11,10 @@ class Settings(BaseSettings):
     DB_NAME: str
 
     db_echo: bool = True #SQLAlchemy echo queries
+    
+    prefix: Prefix = Prefix()
+    
+    
     
     @property
     def DATABASE_URL_asyncpg(self):
