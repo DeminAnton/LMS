@@ -31,12 +31,5 @@ class DatabaseConfig(BaseSettings):
 class Settings(BaseSettings):
     db_config:DatabaseConfig = DatabaseConfig()
     prefix: Prefix = Prefix()
-    
-    
-    
-    
-
-    
-
 
 settings = Settings()

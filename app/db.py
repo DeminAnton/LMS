@@ -44,5 +44,3 @@ db_helper = DataBaseHelper(
     max_overflow=settings.db_config.max_overflow
     )
 
-
-        
