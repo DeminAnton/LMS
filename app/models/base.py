@@ -10,4 +10,5 @@ class Base(DeclarativeBase):
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+        name = cls.__name__.lower()
+        return name + "_table"
