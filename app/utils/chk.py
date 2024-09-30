@@ -2,6 +2,7 @@ import asyncio
 from sqlalchemy import text
 from db import db_helper  # Import the db_helper from your db.py file
 
+
 async def test_db_connection():
     # Use the session_getter from the DataBaseHelper class to check the connection
     try:
@@ -14,6 +15,7 @@ async def test_db_connection():
     finally:
         # Dispose of the engine after testing the connection
         await db_helper.dispose()
+
 
 # Run the test
 if __name__ == "__main__":
