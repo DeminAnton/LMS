@@ -7,4 +7,4 @@ class Course(Base):
     description = Column(String)
 
     # Relationship to users (students)
-    students = relationship("User", secondary="enrollment_table", back_populates="course_table")
+    user_table = relationship("User", secondary="enrollment_table", back_populates="course_table")

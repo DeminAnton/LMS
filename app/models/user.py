@@ -17,8 +17,8 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    role = relationship("Role", back_populates="user_table")
-    courses = relationship("Course", secondary="enrollment_table", back_populates="user_table")
+    role_table = relationship("Role", back_populates="user_table")
+    course_table = relationship("Course", secondary="enrollment_table", back_populates="user_table")
 
     # Hash the password before saving
     def hash_password(self, password: str):

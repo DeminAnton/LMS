@@ -8,8 +8,7 @@ from models import Base
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with db_helper.engine.begin() as connection:
-        await connection.run_sync(Base.metadata.drop_all)
+
     yield
     await db_helper.dispose()
 

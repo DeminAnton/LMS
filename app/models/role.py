@@ -9,4 +9,4 @@ class Role(Base):
     description = Column(String)
     
     # Relationship to users
-    users = relationship("User", back_populates="role_table")
+    user_table = relationship("User", back_populates="role_table")
