@@ -1,12 +1,13 @@
 from .base import Base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
+from .user import users_roles
 
 class Role(Base):
+    __tablename__ = 'roles'
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, nullable=False)
-    description = Column(String)
-    
-    # Relationship to users
-    user_table = relationship("User", back_populates="role_table")
+    role_id = Column(Integer, primary_key=True)
+    name = Column(String(10), unique=True, nullable=False)
+    description = Column(String(200))
+
+    users = relationship('User', secondary=users_roles, back_populates='roles')

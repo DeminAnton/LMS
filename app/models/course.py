@@ -1,10 +1,17 @@
 from .base import Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
+from .user import users_courses
 
 class Course(Base):
-    title = Column(String(100), nullable=False)
-    description = Column(String)
+    __tablename__ = 'course'
 
-    # Relationship to users (students)
-    user_table = relationship("User", secondary="enrollment_table", back_populates="course_table")
+    course_id = Column(Integer, primary_key=True)
+    author_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
+    title = Column(String(200), nullable=False)
+    description = Column(Text)
+
+    author = relationship("User", back_populates="courses")
+    topics = relationship("Topic", back_populates="course")
+    groups = relationship("Group", back_populates="course")
+    students = relationship('User', secondary=users_courses, back_populates='courses')  # Many-to-many with users
