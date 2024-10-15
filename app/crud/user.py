@@ -1,28 +1,30 @@
-from schemas import UserCreate, UserOut, UserUpdate
+from schemas import UserCreate, UserUpdate
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.context import CryptContext
 from models import User, Role
+from utils import hash_password
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-
-async def create_user(db: AsyncSession, user: UserCreate, role_name: str) -> User:
+async def create_user(db: AsyncSession, user: UserCreate) -> User:
+    role_name = user.role
     result = await db.execute(select(Role).filter(Role.name == role_name))
     role = result.scalar()
     if not role:
         raise ValueError("Role not found")
 
     hashed_password = hash_password(user.password)
-    db_user = User(nickname=user.nickname, email=user.email, password=hashed_password, role_id=role.id)
+    db_user = User(
+        login=user.login, 
+        email=user.email, 
+        password=hashed_password,
+        first_name=user.first_name,
+        second_name=user.second_name
+        )
+    db_user.roles.append(role)
     db.add(db_user)
     await db.commit()
-    await db.refresh(db_user)
+    await db.refresh(db_user, ["login", "email", "roles"])
+    
     return db_user
 
 # Get user by ID
@@ -31,8 +33,8 @@ async def get_user(db: AsyncSession, user_id: int) -> User | None:
     return result.scalar()
 
 # Get user by nickname
-async def get_user_by_nickname(db: AsyncSession, nickname: str) -> User | None:
-    result = await db.execute(select(User).filter(User.nickname == nickname))
+async def get_user_by_login(db: AsyncSession, login: str) -> User | None:
+    result = await db.execute(select(User).filter(User.login == login))
     return result.scalar()
 
 # Update user information
