@@ -1,6 +1,7 @@
 from schemas import UserCreate, UserUpdate
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 from models import User, Role
 from utils import hash_password
 
@@ -29,12 +30,16 @@ async def create_user(db: AsyncSession, user: UserCreate) -> User:
 
 # Get user by ID
 async def get_user(db: AsyncSession, user_id: int) -> User | None:
-    result = await db.execute(select(User).filter(User.id == user_id))
+    result = await db.execute(select(User).
+                              options(joinedload(User.roles)).
+                              filter(User.user_id == user_id))
     return result.scalar()
 
 # Get user by nickname
 async def get_user_by_login(db: AsyncSession, login: str) -> User | None:
-    result = await db.execute(select(User).filter(User.login == login))
+    result = await db.execute(select(User).
+                              options(joinedload(User.roles)).
+                              filter(User.login == login))
     return result.scalar()
 
 # Update user information

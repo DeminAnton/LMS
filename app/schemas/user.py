@@ -2,9 +2,7 @@ from pydantic import BaseModel, EmailStr, constr
 from typing import Optional, List
 
 class Role(BaseModel):
-    role_id: int
     name: str
-    description: Optional[str]
 
     class Config:
         from_attributes = True  # Enable ORM mode to work with SQLAlchemy objects
@@ -19,6 +17,16 @@ class UserCreate(BaseModel):
     second_name: constr(max_length=30)
     role: str
     
+class UserLogin(BaseModel):
+    login: constr(min_length=3, max_length=50)
+    email: EmailStr | None = None  # Optional email
+    password: str  # Password should be at least 8 characters long
+    roles: List[Role]
+    
+    class Config:
+        from_attributes = True  # Allows automatic conversion of SQLAlchemy objects to Pydantic models
+
+
 
 # Schema for updating user information
 class UserUpdate(BaseModel):
