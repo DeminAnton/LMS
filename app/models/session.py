@@ -12,14 +12,13 @@ from sqlalchemy import (
     )
 
 from sqlalchemy.orm import relationship
-from .user import users_courses
 
 class Session(Base):
     __tablename__ = 'sessions'
 
     session_id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
-    session_token = Column(String(255), unique=True, nullable=False)
+    session_key = Column(String(255), unique=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     expires_at = Column(DateTime, nullable=False)
     last_active_at = Column(DateTime, default=datetime.utcnow, nullable=False)

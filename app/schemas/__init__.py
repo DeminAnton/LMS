@@ -3,7 +3,8 @@ __all__ = ("UserCreate",
            "UserOut",
            "UserLogin"
            "SessionCreate",
+           "SessionGet",
 )
 
 from schemas.user import UserCreate, UserUpdate, UserOut, UserLogin
-from schemas.session import SessionCreate
+from schemas.session import SessionCreate, SessionGet
