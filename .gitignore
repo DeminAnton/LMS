@@ -164,4 +164,4 @@ cython_debug/
 #I wrote a journal of my decisions
 journal/
 .journal
-certs/
+#certs/
