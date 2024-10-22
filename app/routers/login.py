@@ -69,14 +69,30 @@ async def get_user_by_refresh_token(request: Request, db=Depends(db_helper.sessi
     user = session.user
     return user
 
+
 @router.post("/refresh")
 async def refresh_token(db=Depends(db_helper.session_getter)):
-    user = get_user_by_refresh_token()
+    user: User = get_user_by_refresh_token()
     if not user:
         raise HTTPException(status_code=401, detail="Refresh token expired, please log in again.")
     
-
     
+    jwt_payload = {
+        "sub": user.login,
+        "email": user.email,
+        "roles": user.roles
+    }
+    refresh_token = encode_jwt(payload=jwt_payload)
+    
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        max_age=settings.auth_jwt.session_token_expire_hours * 3600,
+        )
+    return {"RefreshToken": refresh_token,
+            "TokenType": "Cookie"
+    }
     
     
 @router.get("/protected")
