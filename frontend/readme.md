@@ -24,4 +24,4 @@ python ./backend/main.py
 8. Go to the swagger `http://127.0.0.1:8000/docs`
 All endpoints described here.
 
-9. Write code))
+9. Write code
