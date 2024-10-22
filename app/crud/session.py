@@ -1,5 +1,6 @@
 from schemas import SessionCreate
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
 from models import Session, User
@@ -30,8 +31,8 @@ async def create_session(db: AsyncSession, session: SessionCreate) -> Session:
 
 async def get_session_by_session_token(db: AsyncSession, session_key: str) -> Session | None:
     result = await db.execute(select(Session).
-                              options(joinedload=Session.user).
-                              filter(Session.session_token == session_key))
+                              options(joinedload(Session.user)).
+                              filter(Session.session_key == session_key))
     
     session:Session = result.scalar()
     if not session:

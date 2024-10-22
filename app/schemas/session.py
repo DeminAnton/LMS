@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, constr
 from datetime import datetime
+from uuid import UUID
 
 class SessionCreate(BaseModel):
     user_id: int
@@ -10,7 +11,7 @@ class SessionCreate(BaseModel):
 class SessionGet(BaseModel):
     session_id: int
     user_id: int
-    session_key: constr(min_length=25)
+    session_key: str
     created_at: datetime
     expires_at: datetime
     last_active_at: datetime

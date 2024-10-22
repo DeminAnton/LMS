@@ -30,5 +30,5 @@ class Session(Base):
 
     __table_args__ = (
         Index('ix_user_id', 'user_id'),
-        UniqueConstraint('session_token', name='unique_session_token'),
+        UniqueConstraint('session_key', name='unique_session_token'),
     )

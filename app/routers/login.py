@@ -38,11 +38,11 @@ async def auth_user_jwt(
 ):
     new_session = SessionCreate(
         user_id=user.user_id,
-        session_key=uuid4(),
+        session_key=str(uuid4()),
         ip_address=request.client.host,
         user_agent=request.headers.get('user-agent')   
     )
-    new_session:Session = create_session(db, new_session)
+    new_session:Session = await create_session(db, new_session)
     
     jwt_payload = {
         "sub": new_session.session_key,
@@ -60,8 +60,8 @@ async def auth_user_jwt(
     }
    
    
-async def get_user_by_refresh_token(request: Request, db=Depends(db_helper.session_getter))-> User:
-    token = request.cookies.get("RefreshToken")
+async def get_user_by_refresh_token(request: Request, db)-> User:
+    token = request.cookies.get("refresh_token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = decode_jwt(token)
@@ -71,26 +71,27 @@ async def get_user_by_refresh_token(request: Request, db=Depends(db_helper.sessi
 
 
 @router.post("/refresh")
-async def refresh_token(db=Depends(db_helper.session_getter)):
-    user: User = get_user_by_refresh_token()
+async def refresh_token(response: Response, request: Request, db=Depends(db_helper.session_getter)):
+    user: User = await get_user_by_refresh_token(request, db)
     if not user:
         raise HTTPException(status_code=401, detail="Refresh token expired, please log in again.")
     
-    
+    await db.refresh(user, ["login", "email", "roles"])
     jwt_payload = {
         "sub": user.login,
+        "username": user.login,
         "email": user.email,
-        "roles": user.roles
+        "roles": " ".join([i.name for i in user.roles])
     }
-    refresh_token = encode_jwt(payload=jwt_payload)
+    user_token = encode_jwt(payload=jwt_payload)
     
     response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
+        key="access_token", 
+        value=user_token,
         httponly=True,
-        max_age=settings.auth_jwt.session_token_expire_hours * 3600,
+        max_age=settings.auth_jwt.access_token_expire_minutes * 60,
         )
-    return {"RefreshToken": refresh_token,
+    return {"AccesToken": user_token,
             "TokenType": "Cookie"
     }
     
@@ -108,5 +109,6 @@ async def protected_route(request: Request):
 
 @router.post("/logout")
 async def logout(response: Response):
-    response.delete_cookie(key="RefreshToken")
+    response.delete_cookie(key="refresh_token")
+    response.delete_cookie(key="access_token")
     return {"message": "Logout successful"}
